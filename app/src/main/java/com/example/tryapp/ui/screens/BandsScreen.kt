@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.tryapp.TryApplicationScreens
-import com.example.tryapp.ui.bands.BandsViewModel
+import com.example.tryapp.business.bands.BandsViewModel
 import com.example.tryapp.ui.components.Title
 
 @Composable
@@ -33,7 +33,7 @@ fun BandsScreen(
     modifier: Modifier = Modifier
 ) {
 
-    
+
     var isVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {

@@ -1,4 +1,4 @@
-package com.example.tryapp.ui.bands
+package com.example.tryapp.business.bands
 
 import BandCode
 import BandInfo

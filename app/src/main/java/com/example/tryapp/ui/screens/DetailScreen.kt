@@ -24,9 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.tryapp.ui.bands.BandsViewModel
 import com.example.tryapp.ui.components.Title
 
 @Composable
@@ -36,7 +34,7 @@ fun DetailScreen(
 ) {
     var isVisible by remember { mutableStateOf(false) }
 
-    
+
 
     LaunchedEffect(Unit) {
         isVisible = true

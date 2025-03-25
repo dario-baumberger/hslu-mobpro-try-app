@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import com.example.tryapp.ui.bands.BandsViewModel
+import com.example.tryapp.business.bands.BandsViewModel
 import com.example.tryapp.ui.components.Title
 
 @Composable
