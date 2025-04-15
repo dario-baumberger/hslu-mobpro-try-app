@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.dagger.hilt)
 }
 
 
@@ -13,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.tryapp"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -57,9 +59,21 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.kotlinx.serialization.converter)
     implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
     implementation(libs.coil.compose)
     implementation(libs.coil.network)
     implementation(libs.androidx.compose.viewmodel)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.data.store.preferences)
+    implementation(libs.google.accompanist)
+    implementation(libs.dagger.hilt)
+    ksp(libs.dagger.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation)
+    implementation(libs.androidx.material.icons.extended)
+
+
 
 
     testImplementation(libs.junit)

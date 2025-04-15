@@ -1,32 +1,26 @@
 package com.example.tryapp
 
-import BandScreen
-import BandsScreen
-import HomeScreen
-import SplashScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.tryapp.business.bands.BandsViewModel
-import com.example.tryapp.ui.screens.DetailScreen
+import com.example.tryapp.business.music.MusicServiceViewModel
+import com.example.tryapp.ui.components.BottomNavigation
+import com.example.tryapp.ui.components.TopBar
 import com.example.tryapp.ui.theme.TryAppTheme
+import com.example.tryapp.ui.viewmodel.AppStateViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,16 +28,31 @@ class MainActivity : ComponentActivity() {
         setContent {
             TryAppTheme {
                 val navController = rememberNavController()
+                val bandsViewModel: BandsViewModel = hiltViewModel()
+                val appStateViewModel: AppStateViewModel = hiltViewModel()
+                val activity = LocalActivity.current as ComponentActivity
+                val musicServiceViewModel: MusicServiceViewModel = hiltViewModel(activity)
 
-
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val globalModifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    topBar = {
+                        TopBar(navController = navController, musicServiceViewModel)
+                    },
+                    bottomBar = {
+                        BottomNavigation(
+                            navController = navController,
+                        )
+                    }
+                ) { paddingValues ->
                     TryNavHost(
                         navHostController = navController,
-                        modifier = globalModifier
+                        appStateViewModel = appStateViewModel,
+                        bandsViewModel = bandsViewModel,
+                        musicServiceViewModel = musicServiceViewModel,
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .padding(16.dp)
+                            .fillMaxSize(),
                     )
                 }
             }
@@ -51,60 +60,4 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun TryNavHost(
-    navHostController: NavHostController,
-    modifier: Modifier,
-) {
-    val isFirstLaunch = remember { mutableStateOf(true) }
-    val bandsViewModel: BandsViewModel = viewModel()
 
-    NavHost(
-        navController = navHostController,
-        startDestination = TryApplicationScreens.Splash.name,
-        modifier = Modifier.padding(16.dp),
-
-        ) {
-        composable(route = TryApplicationScreens.Splash.name) {
-            SplashScreen(navController = navHostController, isFirstLaunch)
-        }
-        composable(route = TryApplicationScreens.Home.name) {
-            HomeScreen("Home Screen", navHostController, isFirstLaunch)
-
-        }
-        composable(
-            route = "${TryApplicationScreens.Detail.name}/{senderText}",
-            arguments = listOf(
-                navArgument("senderText") { type = NavType.StringType }
-            )
-        ) { navBackStackEntry ->
-            val senderText = navBackStackEntry.arguments?.getString("senderText") ?: "error"
-            DetailScreen(senderText = senderText, navHostController, isFirstLaunch)
-        }
-        composable(route = TryApplicationScreens.Bands.name) {
-
-            BandsScreen(navHostController, isFirstLaunch, bandsViewModel = bandsViewModel)
-
-        }
-        composable(route = "${TryApplicationScreens.Band.name}/{bandCode}", arguments = listOf(
-            navArgument("bandCode") { type = NavType.StringType }
-        )) { navBackStackEntry ->
-            val bandCode = navBackStackEntry.arguments?.getString("bandCode") ?: "error"
-            BandScreen(
-                bandCode = bandCode,
-                navHostController,
-                isFirstLaunch,
-                bandsViewModel = bandsViewModel
-            )
-        }
-    }
-}
-
-
-enum class TryApplicationScreens {
-    Home,
-    Detail,
-    Splash,
-    Bands,
-    Band
-}

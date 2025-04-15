@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Try App</string>
+    <string name="notification_title">HSLU Music Player</string>
+    <string name="notification_text">Now playing...</string>
+    <string name="notification_channel">Music notifications</string>
+    <string name="screen_home">Home</string>
+    <string name="screen_users">Users</string>
+    <string name="screen_bands">Bands</string>
+    <string name="screen_band">Band Detail</string>
+    <string name="screen_music">Music</string>
+    <string name="screen_sms">SMS</string>
 </resources>

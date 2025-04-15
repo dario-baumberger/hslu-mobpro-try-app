@@ -1,14 +1,19 @@
+package com.example.tryapp.ui.screens
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,11 +25,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.tryapp.TryApplicationScreens
-import com.example.tryapp.ui.components.Title
+import com.example.tryapp.withArgs
+import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
@@ -33,26 +39,43 @@ fun HomeScreen(
     isFirstLaunch: MutableState<Boolean>,
     modifier: Modifier = Modifier
 ) {
+    var showSplash by remember { mutableStateOf(isFirstLaunch.value) }
+    var isSplashVisible by remember { mutableStateOf(false) }
+    var showHomeContent by remember { mutableStateOf(!isFirstLaunch.value) }
 
-    val shouldSlide = !isFirstLaunch.value
-    var isVisible by remember { mutableStateOf(false) }
-
-
-
-    LaunchedEffect(Unit) {
-        isVisible = true
+    // Run splash animation once on first launch
+    LaunchedEffect(showSplash) {
+        if (showSplash) {
+            isSplashVisible = true
+            delay(1000)
+            isSplashVisible = false
+            delay(300)
+            showSplash = false
+            showHomeContent = true
+            isFirstLaunch.value = false
+        }
     }
 
+    // Splash animation
     AnimatedVisibility(
-        visible = isVisible,
-        enter = if (shouldSlide) slideInHorizontally(
-            initialOffsetX = { -it },
-            animationSpec = tween(300)
-        ) else fadeIn(animationSpec = tween(300)),
-        exit = slideOutHorizontally(
-            targetOffsetX = { -it },
-            animationSpec = tween(300)
-        )
+        visible = isSplashVisible,
+        enter = fadeIn(tween(500)),
+        exit = fadeOut(tween(300))
+    ) {
+        Column(
+            modifier = modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("Loading...", style = MaterialTheme.typography.headlineLarge)
+        }
+    }
+
+    // Home content (only fade in/out now)
+    AnimatedVisibility(
+        visible = showHomeContent,
+        enter = fadeIn(animationSpec = tween(300)),
+        exit = fadeOut(animationSpec = tween(300))
     ) {
         Column(
             modifier = modifier.fillMaxSize(),
@@ -61,16 +84,36 @@ fun HomeScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
+                    .weight(1f)
             ) {
-                Title("Home")
-                Text("Welcome :)")
-                Button(
-                    onClick = {
-                        navController.navigate("${TryApplicationScreens.Detail.name}/HomeScreen")
-                    },
+
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
+                    modifier = Modifier
+                        .size(width = 240.dp, height = 100.dp)
                 ) {
-                    Text("Laden")
+                    Text(
+                        text = "Filled",
+                        modifier = Modifier
+                            .padding(16.dp),
+                        textAlign = TextAlign.Center,
+                    )
+                }
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
+                    modifier = Modifier
+                        .size(width = 240.dp, height = 100.dp)
+                ) {
+                    Text(
+                        text = "Filled",
+                        modifier = Modifier
+                            .padding(16.dp),
+                        textAlign = TextAlign.Center,
+                    )
                 }
             }
 
@@ -80,21 +123,19 @@ fun HomeScreen(
             ) {
                 Button(
                     onClick = {
-                        navController.navigate("${TryApplicationScreens.Detail.name}/HomeScreen")
+                        navController.navigate(TryApplicationScreens.Detail.withArgs("HomeScreen"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
-
                 ) {
                     Text("Detail")
                 }
                 Button(
                     onClick = {
-                        navController.navigate("${TryApplicationScreens.Bands.name}")
+                        navController.navigate("${TryApplicationScreens.Sms.route}")
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
-
                 ) {
-                    Text("Bands")
+                    Text("Sms")
                 }
                 Text(
                     "With the button above, we can navigate to a new screen",
@@ -103,10 +144,4 @@ fun HomeScreen(
             }
         }
     }
-}
-
-@Preview(showBackground = true, device = Devices.PIXEL)
-@Composable
-fun HomePreview() {
-    Text("Hallo")
 }
